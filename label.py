@@ -109,7 +109,7 @@ def print_label(qlr):
     if len(ad) == 0:
         logger.error("No printer found")
         return
-    string_descr = ad[0]['identifier']
+    string_descr = ad[0]['identifier'].replace('_','/')
 
     printer = BrotherQLBackend(string_descr)
 
