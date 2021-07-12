@@ -65,7 +65,7 @@ def main():
         if len(row) > 5 and row[0] != '' and row[5].lower() == 'y':
             bid = int(row[0])
             data = prepare_data(bid, row[1], "https://s.emf.camp/i/%s" % bid, row[4])
-            img = render_svg(svg_from_template('../template.svg', data))
+            img = render_svg(svg_from_template('./template.svg', data))
             print_label(prepare_label(img))
 
 

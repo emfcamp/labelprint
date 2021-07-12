@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0" y="0" width="340.157" height="204.094" viewBox="0, 0, 340.157, 204.094">
+  <g id="Layer_1">
+    <g>
+      <path d="M18.123,103.624 C16.668,103.624 15.274,104.776 13.575,107.019 L9.333,104.23 C11.576,99.381 14.121,97.259 17.214,97.259 C20.546,97.259 23.879,100.47 26.304,100.47 C27.758,100.47 29.152,99.744 30.97,97.076 L35.152,99.863 C32.849,104.288 30.487,106.957 26.789,106.957 C23.211,106.957 20.123,103.624 18.123,103.624" fill="#000000"/>
+      <path d="M22.743,122.833 C11.789,122.833 2.909,113.954 2.909,103 C2.909,92.046 11.789,83.167 22.743,83.167 C33.696,83.167 42.576,92.046 42.576,103 C42.576,113.954 33.696,122.833 22.743,122.833 z" fill-opacity="0" stroke="#000000" stroke-width="4"/>
+    </g>
+    <path d="M22.743,83.167 L22.743,3.225" fill-opacity="0" stroke="#000000" stroke-width="4"/>
+    <path d="M22.743,122.833 L22.743,201.833" fill-opacity="0" stroke="#000000" stroke-width="4" stroke-linecap="square" stroke-linejoin="round"/>
+    <path d="M22.743,3.225 L337.345,3.225" fill-opacity="0" stroke="#000000" stroke-width="4" stroke-linecap="square" stroke-linejoin="round"/>
+    <path d="M23.743,201.833 L337.833,201.833" fill-opacity="0" stroke="#000000" stroke-width="4" stroke-linejoin="round"/>
+    <path d="M337.833,3.225 L337.833,201.833" fill-opacity="0" stroke="#000000" stroke-width="4" stroke-linecap="square" stroke-linejoin="round"/>
+    <text transform="matrix(1, 0, 0, 1, 149.473, 21.92)">
+      <tspan x="-118.23" y="7.5" font-family="HelveticaNeue-Bold" font-size="20" fill="#000000">Electromagnetic Field</tspan>
+    </text>
+    <text transform="matrix(1, 0, 0, 1, 141.128, 60.997)">
+      <tspan x="-109.885" y="3.833" font-family="HelveticaNeue" font-size="20" fill="#000000" id="boxid">Box ID: xxxxxx</tspan>
+    </text>
+    <path d="M23.743,40.5 L255.125,40.434" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    <text transform="matrix(1, 0, 0, 1, 152.507, 100.015)">
+      <tspan x="-98.507" y="14" font-family="HelveticaNeue" font-size="38" fill="#000000" id="boxname">Box Name</tspan>
+    </text>
+    <path d="M23.743,76.664 L255.125,76.664" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    <path d="M23.743,129.5 L337.833,129.5" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+    <text transform="matrix(1, 0, 0, 1, 31.233, 104.44)"/>
+    <text transform="matrix(1, 0, 0, 1, 49.653, 137.19)">
+      <tspan x="-22.41" y="3.5" font-family="HelveticaNeue-Medium" font-size="10" fill="#000000">Contents:</tspan>
+    </text>
+    <path d="M23.743,144.19 L74.388,144.19" fill-opacity="0" stroke="#000000" stroke-width="0.5" stroke-linejoin="round"/>
+    <path d="M74.388,144.19 L74.388,129.5" fill-opacity="0" stroke="#000000" stroke-width="0.5" stroke-linecap="square" stroke-linejoin="round"/>
+    <text transform="matrix(1, 0, 0, 1, 180.288, 170.997)">
+      <tspan x="-153.045" y="-16" font-family="HelveticaNeue" font-size="10" fill="#000000" id="contents1">Info 1</tspan>
+      <tspan x="-153.045" y="-3" font-family="HelveticaNeue" font-size="10" fill="#000000" id="contents2">Info 2</tspan>
+      <tspan x="-153.045" y="10" font-family="HelveticaNeue" font-size="10" fill="#000000" id="contents3">Info 3</tspan>
+      <tspan x="-153.045" y="23" font-family="HelveticaNeue" font-size="10" fill="#000000" id="contents4">Info 4</tspan>
+    </text>
+    <g id="qrcode" transform="translate(255.125, 4.425)">
+    </g>
+    <path d="M255.125,4.425 L337.345,4.425 L337.345,86.645 L255.125,86.645 L255.125,4.425 z" fill-opacity="0" stroke="#000000" stroke-width="1"/>
+  </g>
+</svg>
