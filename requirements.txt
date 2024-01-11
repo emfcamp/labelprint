@@ -1,7 +1,0 @@
-qrcode
-cairosvg
-brother_ql
-pillow
-httplib2
-google-api-python-client
-oauth2client

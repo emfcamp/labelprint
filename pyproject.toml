@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "labelprint"
+version = "0.1.0"
+description = ""
+authors = ["Russ Garrett <russ@garrett.co.uk>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+requests = "^2.31.0"
+click = "^8.1.7"
+colorama = "^0.4.6"
+python-dotenv = "^1.0.0"
+rich = "^13.7.0"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.8.0"
+pylint = "^3.0.3"
+types-requests = "^2.31.0.20240106"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
