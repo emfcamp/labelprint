@@ -40,7 +40,9 @@ def parse_asset_ids(asset_ids: str) -> Iterator[int]:
 
 
 def asset_url(asset_id: int) -> str:
-    return config["SNIPEIT_URL"] or "" + f"/hardware/{asset_id}"
+    if config.get("SNIPEIT_URL") is None:
+        raise Exception("No SNIPEIT_URL configured")
+    return config["SNIPEIT_URL"] + f"/hardware/{asset_id}"
 
 
 def print_asset_labels(assets: list[dict], printer: str):
