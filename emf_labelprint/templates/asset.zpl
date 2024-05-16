@@ -1,6 +1,9 @@
 ^XF Template for asset printed on a 50.8x25.4 Z-Ultimate 3000T label
+^XF 406 x 203 dots at 203 dpi
+
 ^XA
 ^DFE:ASSET.ZPL^FS
+^PW 406
 ^CI28
 
 ^CWA,E:RAL000.FNT
@@ -35,9 +38,9 @@
 ^FN3^FS
 
 ^FX 2D bar code.
-^BY3,3,40
+^BY3,3
 ^FO20,170
-^BCN,,N
+^BCN,40,N
 ^FN2^FS
 
 ^XZ

@@ -1,3 +1,6 @@
+from collections import defaultdict
+from dataclasses import dataclass
+from functools import lru_cache
 from typing import Optional, Iterator
 from pathlib import Path
 import os
@@ -11,6 +14,18 @@ from .snipeit import SnipeIt
 
 config = {**dotenv_values(".env"), **os.environ}
 ASSET_PREFIX: str = config.get("ASSET_PREFIX", "") or ""
+
+LABEL_STOCK = {"asset": "50.8x25.4mm", "box": "76.2x50.8mm"}
+
+ALL_ASSETS = None
+
+
+@dataclass
+class AssetDetails:
+    tag: str
+    name: str
+    id: int
+    contents: Optional[str]
 
 
 def load_templates(printer: str):
@@ -41,24 +56,73 @@ def parse_asset_ids(asset_ids: str) -> Iterator[int]:
 
 def asset_url(asset_id: int) -> str:
     if config.get("SNIPEIT_URL") is None:
-        raise Exception("No SNIPEIT_URL configured")
+        raise ValueError("No SNIPEIT_URL configured")
     return config["SNIPEIT_URL"] + f"/hardware/{asset_id}"
 
 
-def print_asset_labels(assets: list[dict], printer: str):
+def format_textbox(text: Optional[str], max_lines: int) -> str:
+    if text is None:
+        return ""
+    return r"\&".join(text.split("\n")[:max_lines])
+
+
+def print_asset_labels(assets: list[AssetDetails], printer: str, template: str):
     batch = []
     for asset in assets:
         batch.append(
             {
-                1: asset["name"],
-                2: asset["asset_tag"],
-                3: f"QA,{asset_url(asset['id'])}",
+                1: asset.name,
+                2: asset.tag,
+                3: f"QA,{asset_url(asset.id)}",
+                4: format_textbox(asset.contents, 8),
             }
         )
-    send_zpl_templated(printer, "ASSET.ZPL", batch)
+    send_zpl_templated(printer, f"{template.upper()}.ZPL", batch)
 
 
-def do_print(printer: str, si: SnipeIt, console: Console):
+@lru_cache
+def get_model_description(si: SnipeIt, model_id: int):
+    model = si.fetch(f"models/{model_id}")
+    return model["manufacturer"]["name"] + " " + model["name"]
+
+
+def get_contents(si: SnipeIt, asset: dict):
+    global ALL_ASSETS
+
+    # No way to search for assets which are checked out to this asset, so just get them all.
+
+    if ALL_ASSETS is None:
+        ALL_ASSETS = si.fetch("hardware")["rows"]
+
+    child_assets = [
+        child_asset
+        for child_asset in ALL_ASSETS
+        if child_asset["assigned_to"] is not None
+        and child_asset["assigned_to"]["id"] == asset["id"]
+    ]
+
+    grouped_child_assets: dict[str, list[dict]] = defaultdict(list)
+    for child_asset in child_assets:
+        grouped_child_assets[child_asset["model"]["id"]].append(child_asset)
+
+    contents = "\n".join(
+        [
+            f"{len(assets)} x {get_model_description(si, model)}"
+            for model, assets in grouped_child_assets.items()
+        ]
+    )
+    if asset.get("custom_fields"):
+        for field, value in asset["custom_fields"].items():
+            if (
+                field == "Contents"
+                and value["value"] != ""
+                and value["value"] is not None
+            ):
+                contents += "\n" + value["value"]
+    return contents
+
+
+def do_print(printer: str, si: SnipeIt, console: Console, template: str):
     asset_ids = console.input("Enter asset IDs or tags: ")
     assets = [
         si.get_asset_by_tag(id2tag(asset_id)) for asset_id in parse_asset_ids(asset_ids)
@@ -68,18 +132,47 @@ def do_print(printer: str, si: SnipeIt, console: Console):
     table.add_column("Tag")
     table.add_column("Name")
     table.add_column("Model")
+    if template == "box":
+        table.add_column("Contents")
+
+    asset_details = []
+
     for asset in assets:
-        table.add_row(asset["asset_tag"], asset["name"], asset["model"]["name"])
+        contents = None
+        if template == "box":
+            contents = get_contents(si, asset)
+            table.add_row(
+                asset["asset_tag"], asset["name"], asset["model"]["name"], contents
+            )
+        else:
+            table.add_row(asset["asset_tag"], asset["name"], asset["model"]["name"])
+
+        details = AssetDetails(
+            tag=asset["asset_tag"],
+            name=asset["name"],
+            id=asset["id"],
+            contents=contents,
+        )
+        asset_details.append(details)
+
     console.print(table)
     confirm = console.input("Print these assets (y/n)? ")
     if confirm.lower() == "y":
         click.secho(f"Printing labels for {len(assets)} assets...", fg="blue")
-        print_asset_labels(assets, printer)
+        print_asset_labels(asset_details, printer, template)
 
 
 @click.option("--printer", "-p", help="Printer to use")
+@click.option(
+    "--template",
+    "-t",
+    help="Template to use",
+    default="asset",
+    show_default=True,
+    type=click.Choice(["asset", "box"]),
+)
 @click.command()
-def labelprint(printer: Optional[str]):
+def labelprint(printer: Optional[str], template: str):
     """EMF label printing tool"""
 
     if not printer:
@@ -99,8 +192,14 @@ def labelprint(printer: Optional[str]):
     click.secho(f"Initialising printer {printer}...", fg="blue")
     load_templates(printer)
 
+    click.secho(
+        f"You are printing {template} labels - "
+        f"ensure you have {LABEL_STOCK[template]} label stock loaded.",
+        fg="red",
+    )
+
     while True:
-        do_print(printer, si, console)
+        do_print(printer, si, console, template)
 
 
 if __name__ == "__main__":
