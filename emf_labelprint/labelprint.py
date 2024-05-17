@@ -63,7 +63,9 @@ def asset_url(asset_id: int) -> str:
 def format_textbox(text: Optional[str], max_lines: int) -> str:
     if text is None:
         return ""
-    return r"\&".join(text.split("\n")[:max_lines])
+    lines = map(lambda l: l.strip(), text.split("\n"))
+    lines = list(filter(lambda l: l != "", lines))
+    return r"\&".join(lines[:max_lines])
 
 
 def print_asset_labels(assets: list[AssetDetails], printer: str, template: str):
@@ -105,12 +107,11 @@ def get_contents(si: SnipeIt, asset: dict):
     for child_asset in child_assets:
         grouped_child_assets[child_asset["model"]["id"]].append(child_asset)
 
-    contents = "\n".join(
-        [
+    contents = [
             f"{len(assets)} x {get_model_description(si, model)}"
             for model, assets in grouped_child_assets.items()
         ]
-    )
+
     if asset.get("custom_fields"):
         for field, value in asset["custom_fields"].items():
             if (
@@ -118,8 +119,8 @@ def get_contents(si: SnipeIt, asset: dict):
                 and value["value"] != ""
                 and value["value"] is not None
             ):
-                contents += "\n" + value["value"]
-    return contents
+                contents += value["value"].split("\n")
+    return "\n".join(contents)
 
 
 def do_print(printer: str, si: SnipeIt, console: Console, template: str):
