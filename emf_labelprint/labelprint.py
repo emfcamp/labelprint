@@ -5,6 +5,7 @@ from typing import Optional, Iterator
 from pathlib import Path
 import os
 import click
+import html
 from dotenv import dotenv_values
 from rich.console import Console
 from rich.table import Table
@@ -68,17 +69,19 @@ def format_textbox(text: Optional[str], max_lines: int) -> str:
     return r"\&".join(lines[:max_lines])
 
 
-def print_asset_labels(assets: list[AssetDetails], printer: str, template: str):
+def print_asset_labels(
+    assets: list[AssetDetails], printer: str, template: str, copies: int = 1
+):
     batch = []
     for asset in assets:
-        batch.append(
+        batch += [
             {
                 1: asset.name,
                 2: asset.tag,
                 3: f"QA,{asset_url(asset.id)}",
                 4: format_textbox(asset.contents, 8),
             }
-        )
+        ] * copies
     send_zpl_templated(printer, f"{template.upper()}.ZPL", batch)
 
 
@@ -108,9 +111,9 @@ def get_contents(si: SnipeIt, asset: dict):
         grouped_child_assets[child_asset["model"]["id"]].append(child_asset)
 
     contents = [
-            f"{len(assets)} x {get_model_description(si, model)}"
-            for model, assets in grouped_child_assets.items()
-        ]
+        f"{len(assets)} x {get_model_description(si, model)}"
+        for model, assets in grouped_child_assets.items()
+    ]
 
     if asset.get("custom_fields"):
         for field, value in asset["custom_fields"].items():
@@ -119,7 +122,8 @@ def get_contents(si: SnipeIt, asset: dict):
                 and value["value"] != ""
                 and value["value"] is not None
             ):
-                contents += value["value"].split("\n")
+                # For some reason this JSON contains HTML-encoded text
+                contents += html.unescape(value["value"]).split("\n")
     return "\n".join(contents)
 
 
@@ -159,8 +163,12 @@ def do_print(printer: str, si: SnipeIt, console: Console, template: str):
     console.print(table)
     confirm = console.input("Print these assets (y/n)? ")
     if confirm.lower() == "y":
+        copies = int(console.input("How many copies? "))
+        if not copies:
+            copies = 1
+
         click.secho(f"Printing labels for {len(assets)} assets...", fg="blue")
-        print_asset_labels(asset_details, printer, template)
+        print_asset_labels(asset_details, printer, template, copies)
 
 
 @click.option("--printer", "-p", help="Printer to use")
