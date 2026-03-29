@@ -88,6 +88,8 @@ def print_asset_labels(
 @lru_cache
 def get_model_description(si: SnipeIt, model_id: int):
     model = si.fetch(f"models/{model_id}")
+    if not model["manufacturer"]:
+        return model["name"]
     return model["manufacturer"]["name"] + " " + model["name"]
 
 
@@ -144,17 +146,18 @@ def do_print(printer: str, si: SnipeIt, console: Console, template: str):
 
     for asset in assets:
         contents = None
+        name = html.unescape(asset['name'])
         if template == "box":
             contents = get_contents(si, asset)
             table.add_row(
-                asset["asset_tag"], asset["name"], asset["model"]["name"], contents
+                asset["asset_tag"], name, asset["model"]["name"], contents
             )
         else:
-            table.add_row(asset["asset_tag"], asset["name"], asset["model"]["name"])
+            table.add_row(asset["asset_tag"], name, asset["model"]["name"])
 
         details = AssetDetails(
             tag=asset["asset_tag"],
-            name=asset["name"],
+            name=name,
             id=asset["id"],
             contents=contents,
         )
@@ -163,9 +166,11 @@ def do_print(printer: str, si: SnipeIt, console: Console, template: str):
     console.print(table)
     confirm = console.input("Print these assets (y/n)? ")
     if confirm.lower() == "y":
-        copies = int(console.input("How many copies? "))
-        if not copies:
+        raw = console.input("How many copies? ")
+        if not raw:
             copies = 1
+        else:
+            copies = int(raw)
 
         click.secho(f"Printing labels for {len(assets)} assets...", fg="blue")
         print_asset_labels(asset_details, printer, template, copies)
