@@ -1,4 +1,8 @@
+import base64
+import os
 import subprocess
+import zlib
+from pathlib import Path
 
 
 def get_printers() -> list[str]:
