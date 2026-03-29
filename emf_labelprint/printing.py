@@ -1,8 +1,4 @@
-import base64
-import os
 import subprocess
-import zlib
-from pathlib import Path
 
 
 def get_printers() -> list[str]:
@@ -15,7 +11,7 @@ def is_zebra_printer(printer_name: str) -> bool:
 
 
 def get_supported_printers() -> list[str]:
-    return [printer for printer in get_printers() if is_zebra_printer(printer)]
+    return [printer for printer in get_printers()]
 
 
 def send_zpl(printer: str, zpl: str):
